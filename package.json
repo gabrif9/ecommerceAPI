@@ -1,0 +1,20 @@
+{
+  "name": "ecommerceapi",
+  "version": "1.0.0",
+  "description": "API for ecommerce SAW project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecommerce",
+    "node",
+    "rest",
+    "api"
+  ],
+  "author": "Gabriele Ferrigno",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
