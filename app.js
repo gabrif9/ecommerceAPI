@@ -10,6 +10,7 @@ const orderRoutes = require("./api/routes/orders");
 mongoose.connect(
   `mongodb+srv://gabrif9:${process.env.DATABASE_PASSWORD}@cluster0.slumba1.mongodb.net/?retryWrites=true&w=majority`
 );
+mongoose.Promise = global.Promise;
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
