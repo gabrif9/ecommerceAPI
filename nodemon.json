@@ -1,5 +1,6 @@
 {
     "env": {
-        "DATABASE_PASSWORD": "Dfy3AKAtYeJKtAlr"
+        "DATABASE_PASSWORD": "Dfy3AKAtYeJKtAlr",
+        "JWT_KEY": "gabrif9secretkey"
     }
 }

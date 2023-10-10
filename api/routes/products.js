@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const checkAuth = require('../middleware/check-auth')
 
 const Product = require("../models/product");
 
@@ -29,14 +30,13 @@ router.get("/", (req, res, next) => {
       res.status(200).json(response);
     })
     .catch((err) => {
-      console.log(err);
       res.status(500).json({
         error: err,
       });
     });
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", checkAuth, (req, res, next) => {
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
