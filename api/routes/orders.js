@@ -2,12 +2,14 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const checkAuth = require('../middleware/check-auth')
+const jwt = require("jsonwebtoken");
 
 const Order = require("../models/order");
 const Product = require("../models/product");
 
 
 router.get("/", checkAuth, (req, res, next) => {
+  let email = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_KEY).email
   Order.find()
     .select("product quantity _id status")
     .populate('product')
@@ -33,6 +35,7 @@ router.get("/", checkAuth, (req, res, next) => {
 });
 
 router.post("/", checkAuth, (req, res, next) => {
+  let email = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_KEY).email
   //check if the product exist
   Product.findById(req.body.productId)
     .then((product) => {
@@ -46,6 +49,7 @@ router.post("/", checkAuth, (req, res, next) => {
         quantity: req.body.quantity,
         name: req.body.name,
         status: req.body.status,
+        email: email,
         product: req.body.productId,
       });
       //return a promise

@@ -5,6 +5,7 @@ const orderSchema = mongoose.Schema({
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
     status: { type: String, default: 'pending' },
     name: { type: String, required: true},
+    email: { type: String, required: true},
     quantity: { type: Number, default: 1 }
 });
 

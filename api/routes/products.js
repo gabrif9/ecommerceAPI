@@ -5,6 +5,7 @@ const checkAuth = require('../middleware/check-auth')
 
 const Product = require("../models/product");
 
+// get all products
 router.get("/", (req, res, next) => {
   Product.find()
     .select("name price _id description category image")
@@ -36,6 +37,7 @@ router.get("/", (req, res, next) => {
     });
 });
 
+// insert a new product
 router.post("/", checkAuth, (req, res, next) => {
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
@@ -74,6 +76,7 @@ router.post("/", checkAuth, (req, res, next) => {
     });
 });
 
+// find a single product
 router.get("/:productId", (req, res, next) => {
   const id = req.params.productId;
   Product.findById(id)
@@ -97,6 +100,8 @@ router.get("/:productId", (req, res, next) => {
     });
 });
 
+
+// modify a product
 router.patch("/:productId", (req, res, next) => {
   const id = req.params.productId;
   const updateOps = {};
