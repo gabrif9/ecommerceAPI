@@ -1,18 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const checkAuth = require('../middleware/check-auth')
+const checkAuth = require("../middleware/check-auth");
 const jwt = require("jsonwebtoken");
 
 const Order = require("../models/order");
 const Product = require("../models/product");
 
-
 router.get("/", checkAuth, (req, res, next) => {
-  let email = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_KEY).email
+  let email = jwt.verify(
+    req.headers.authorization.split(" ")[1],
+    process.env.JWT_KEY
+  ).email;
   Order.find()
     .select("product quantity _id status")
-    .populate('product')
+    .populate("product")
     .exec()
     .then((docs) => {
       res.status(200).json({
@@ -35,7 +37,10 @@ router.get("/", checkAuth, (req, res, next) => {
 });
 
 router.post("/", checkAuth, (req, res, next) => {
-  let email = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_KEY).email
+  let email = jwt.verify(
+    req.headers.authorization.split(" ")[1],
+    process.env.JWT_KEY
+  ).email;
   //check if the product exist
   Product.findById(req.body.productId)
     .then((product) => {
@@ -60,7 +65,7 @@ router.post("/", checkAuth, (req, res, next) => {
       if (res.statusCode === 404) {
         return res;
       }
-      
+
       res.status(201).json({
         message: "Order stored",
         createdOrder: {
@@ -73,7 +78,7 @@ router.post("/", checkAuth, (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
       res.status(500).json({
         error: err,
       });
@@ -87,8 +92,8 @@ router.get("/:orderId", checkAuth, (req, res, next) => {
     .then((order) => {
       if (!order) {
         return res.status(404).json({
-          message: 'Order not found'
-        })
+          message: "Order not found",
+        });
       }
       res.status(200).json({
         order: order,
@@ -113,14 +118,28 @@ router.post("/:orderId", checkAuth, (req, res, next) => {
 });
 
 router.delete("/:orderId", checkAuth, (req, res, next) => {
-  Order.deleteOne({ _id: req.params.orderId })
+  let email = jwt.verify(
+    req.headers.authorization.split(" ")[1],
+    process.env.JWT_KEY
+  ).email;
+  Order.findById(req.params.orderId)
     .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "Order deleted",
-      });
-    })
-    .catch();
+    .then((order) => {
+      if (order.email === email) {
+        Order.deleteOne({ _id: req.params.orderId })
+          .exec()
+          .then((result) => {
+            res.status(200).json({
+              message: "Order deleted",
+            });
+          })
+          .catch();
+      } else {
+        res.status(401).json({
+          message: "You cannot delete this order because is not your order!!",
+        });
+      }
+    });
 });
 
 module.exports = router;
