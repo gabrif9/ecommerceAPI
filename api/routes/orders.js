@@ -12,7 +12,7 @@ router.get("/", checkAuth, (req, res, next) => {
     req.headers.authorization.split(" ")[1],
     process.env.JWT_KEY
   ).email;
-  Order.find()
+  Order.find({email: email})
     .select("product quantity _id status")
     .populate("product")
     .exec()
@@ -42,6 +42,7 @@ router.post("/", checkAuth, (req, res, next) => {
     process.env.JWT_KEY
   ).email;
   //check if the product exist
+  console.log(req.body.productId)
   Product.findById(req.body.productId)
     .then((product) => {
       if (!product) {
@@ -52,7 +53,7 @@ router.post("/", checkAuth, (req, res, next) => {
       const order = new Order({
         _id: new mongoose.Types.ObjectId(),
         quantity: req.body.quantity,
-        name: req.body.name,
+        name: product.name,
         status: req.body.status,
         email: email,
         product: req.body.productId,
@@ -118,6 +119,7 @@ router.post("/:orderId", checkAuth, (req, res, next) => {
 });
 
 router.delete("/:orderId", checkAuth, (req, res, next) => {
+  console.log(req)
   let email = jwt.verify(
     req.headers.authorization.split(" ")[1],
     process.env.JWT_KEY
