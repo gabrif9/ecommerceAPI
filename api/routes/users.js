@@ -15,6 +15,7 @@ router.post("/signup", (req, res, next) => {
           message: "Mail exists",
         });
       } else {
+        //hash the password
         bcrypt.hash(req.body.password, 10, (err, hash) => {
           if (err) {
             return res.status(500).json({
@@ -24,19 +25,18 @@ router.post("/signup", (req, res, next) => {
             const user = new User({
               _id: new mongoose.Types.ObjectId(),
               email: req.body.email,
+              role: req.body.role,
               password: hash,
             });
-            console.log(user);
+            console.log('the user details',user);
             user
               .save()
               .then((result) => {
-                console.log(result);
                 res.status(201).json({
                   message: "User created",
                 });
               })
               .catch((err) => {
-                console.log(err);
                 res.status(500).json({
                   error: err,
                 });
@@ -54,10 +54,12 @@ router.post("/login", (req, res, next) => {
     .then((user) => {
       if (user.length < 1) {
         return res.status(401).json({
-          message: "Auth failed",
+          message: "No user found",
         });
       }
+      console.log('user hash from db',user[0].password)
       bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+        console.log(err, result)
         if (err) {
           return res.status(401).json({
             message: "Auth failed",
@@ -68,15 +70,14 @@ router.post("/login", (req, res, next) => {
             {
               email: user[0].email,
               userId: user[0]._id,
+              role: user[0].role
             },
-            process.env.JWT_KEY,
-            {
-              expiresIn: "1h",
-            }
+            process.env.JWT_KEY
           );
           return res.status(200).json({
             message: "Auth successful",
             token: token,
+            role: user[0].role
           });
         }
         res.status(401).json({
